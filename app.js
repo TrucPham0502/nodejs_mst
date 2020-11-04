@@ -1,7 +1,7 @@
 // Require packages and set the port
 const routes = require('./routes/routes');
 const express = require('express');
-const port = 3002;
+const port = 80;
 const bodyParser = require('body-parser');
 const request = require('request-promise');
 const randomUseragent = require('random-useragent');
