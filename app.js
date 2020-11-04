@@ -35,6 +35,7 @@ router.post('/api/search', (req, res) => {
         url: 'https://masothue.vn/Ajax/Search',
         headers: {
             'host': ip.toString(),
+            'proxy': ip.toString(),
             'user-agent': useAgent,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
@@ -94,7 +95,7 @@ function capitalizeFirstLetter(string) {
 // Start the server
 app.use('/', router);
 app.use(express.static(__dirname + '/css'));
-const server = app.listen(port,ip, (error) => {
+const server = app.listen(port, (error) => {
     if (error) return console.log(`Error: ${error}`);
  
     console.log(`Server listening on port ${server.address().port}`);
