@@ -54,7 +54,7 @@ router.post('/api/search', (req, res) => {
             data: progressData(r)
         });
     }).catch(error => { 
-        console.log(error)
+        console.log(error.message)
         res.send({
             code : 0,
             message: 'Error',
