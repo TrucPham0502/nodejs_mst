@@ -43,7 +43,7 @@ router.post('/api/search', (req, res) => {
         url: 'https://masothue.vn/Ajax/Search',
         headers: {
             'host': ip.toString(),
-            'proxy': "127.0.0.1:3000",
+            'proxy': "139.99.122.37:443",
             'user-agent': useAgent,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
