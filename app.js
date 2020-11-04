@@ -45,7 +45,8 @@ router.post('/api/search', (req, res) => {
             'host': ip.toString(),
             'proxy': "139.99.122.37:443",
             'user-agent': useAgent,
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Connection': 'keep-alive'
         },
         // body: JSON.stringify(params),
         form: params,
