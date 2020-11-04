@@ -29,7 +29,8 @@ router.get('/',function(req,res){
 router.post('/api/search', (req, res) => {
     var params = {  
         q: req.body.q,
-        type: req.body.type
+        type: req.body.type,
+        token: "NOn9sval2X"
     };
     var options = {
         url: 'https://masothue.vn/Ajax/Search',
