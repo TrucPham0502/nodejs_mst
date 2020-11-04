@@ -34,7 +34,7 @@ router.post('/api/search', (req, res) => {
     var options = {
         url: 'https://masothue.vn/Ajax/Search',
         headers: {
-            'proxy': '45.73.0.118:35170',//ip.toString(),
+            'host': ip.toString(),
             'user-agent': useAgent,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
@@ -53,7 +53,7 @@ router.post('/api/search', (req, res) => {
             data: progressData(r)
         });
     }).catch(error => { 
-        console.log(error.message)
+        console.log(error)
         res.send({
             code : 0,
             message: 'Error',
