@@ -54,32 +54,23 @@ router.post('/api/search', (req, res) => {
         method: "POST",
     };
     console.log(options)
-    request(options, function(err, response, body){
-        console.log(err)
-        console.log(body)
-    });
-    res.send({
-        code : 0,
-        message: 'Error',
-        data: {}
-     });
-    // request(options)
-    // .then( (body) =>  { 
-    //     var r = JSON.parse(body)
-    //     console.log(r); 
-    //     res.send({
-    //         code : 1,
-    //         message: 'Success',
-    //         data: progressData(r)
-    //     });
-    // }).catch(error => { 
-    //     console.log(error.message)
-    //     res.send({
-    //         code : 0,
-    //         message: 'Error',
-    //         data: {}
-    //     });
-    // })
+    request(options)
+    .then( (body) =>  { 
+        var r = JSON.parse(body)
+        console.log(r); 
+        res.send({
+            code : 1,
+            message: 'Success',
+            data: progressData(r)
+        });
+    }).catch(error => { 
+        console.log(error.message)
+        res.send({
+            code : 0,
+            message: 'Error',
+            data: {}
+        });
+    })
 });
 
 function progressData(data) {
