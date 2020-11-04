@@ -1,0 +1,670 @@
+<html>
+
+<head>
+    <title>Tra cuu MST</title>
+</head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.8/jszip.js"
+    integrity="sha512-3KyePOt/FK314qOCZhMfzt01WMTSxxKRfdPsUTyu+tu64MuZQTFOZ51Rf4a+8y616yZolMzH24FTckng9cd7Yg=="
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.8/xlsx.min.js"
+    integrity="sha512-8y82APPyIOwaBCEuQoZM4KdySliHcT2dQwZzkdOx7l2LfGS01ZvNg0A7PpplNTYN66tz7skkFr4rihZQhf9yGA=="
+    crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/rxjs/bundles/rxjs.umd.min.js"></script>
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto:400,700');
+
+    html,
+    body,
+    .container {
+        height: 100%;
+        width: 100%;
+    }
+
+    body {
+        background-color: #cbdaef;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .center-box {
+        height: 100%;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        min-height: 24em;
+        justify-content: center;
+    }
+
+    .upload-box {
+        background-color: #232b38;
+        width: 620px;
+        height: 320px;
+        flex: none;
+        /*max-width: 50%;*/
+        display: flex;
+    }
+
+    .upload-file {
+        cursor: pointer;
+        width: 50%;
+        text-align: center;
+        align-self: center;
+        position: relative;
+    }
+
+    .upload-file input {
+        opacity: 0;
+        height: 100%;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: block;
+        cursor: pointer;
+    }
+
+    h6 {
+        color: #45556f;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+    .upload-details {
+        width: 60%;
+        border-left: 1px solid #455265;
+    }
+
+    .upload-details ul {
+        display: flex;
+        margin: 0;
+            padding: 0;
+        flex-direction: column;
+        align-items: stretch;
+        height: 100%;
+    }
+
+    .upload-details ul li {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        border-bottom: 1px solid #212b35;
+        background-color: #313c4e;
+        padding: 0 30px;
+    }
+
+    .upload-details ul li p {
+        line-height: 20px;
+        font-size: 18px;
+        color: #cbdaef;
+    }
+
+    .upload-details ul li small {
+        text-transform: uppercase;
+        color: #66758f;
+        font-size: 13px;
+        font-weight: 700;
+        display: block;
+    }
+
+    .shadow {
+        position: relative;
+    }
+
+    .shadow::before,
+    .shadow::after {
+        top: 0;
+        content: " ";
+        display: block;
+    }
+
+    .shadow::before {
+        width: 580px;
+        position: relative;
+        background-color: #2a3342;
+        opacity: .6;
+        height: 10px;
+    }
+
+    .shadow::after {
+        width: 540px;
+        left: 20px;
+        position: absolute;
+        background-color: #2a3342;
+        opacity: .3;
+        height: 20px;
+    }
+
+    .footer {
+        position: absolute;
+        bottom: 25px;
+        text-align: center;
+        font-size: 12px;
+        line-height: 18px;
+        opacity: .5;
+    }
+
+    .noselect {
+        -webkit-touch-callout: none;
+        /* iOS Safari */
+        -webkit-user-select: none;
+        /* Safari */
+        -khtml-user-select: none;
+        /* Konqueror HTML */
+        -moz-user-select: none;
+        /* Firefox */
+        -ms-user-select: none;
+        /* Internet Explorer/Edge */
+        user-select: none;
+        /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+    }
+
+    @keyframes flickerAnimation {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    @-o-keyframes flickerAnimation {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    @-moz-keyframes flickerAnimation {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    @-webkit-keyframes flickerAnimation {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .animate-flicker {
+        -webkit-animation: flickerAnimation 1s infinite;
+        -moz-animation: flickerAnimation 1s infinite;
+        -o-animation: flickerAnimation 1s infinite;
+        animation: flickerAnimation 1s infinite;
+    }
+
+    i.fa {
+        color: #cbdaef;
+        display: inline-block;
+        border-radius: 60px;
+        border: 1px solid #cbdaef;
+        padding: 15px;
+        font-size: 140%;
+        margin-right: 20px;
+    }
+
+    .ready {
+        color: #56f9ba !important;
+    }
+
+    i.ready {
+        border-color: #56f9ba !important;
+    }
+
+    .slow-spin {
+        -webkit-animation: fa-spin 6s infinite linear;
+        animation: fa-spin 6s infinite linear;
+    }
+
+    @keyframes fa-spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class="center-box">
+            <div class="upload-box noselect">
+                <div class="upload-file">
+                    <input type="file" name="file" id="file"
+                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                    <img
+                        src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDI5NC4xNTYgMjk0LjE1NiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjk0LjE1NiAyOTQuMTU2OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjY0cHgiIGhlaWdodD0iNjRweCI+CjxnPgoJPHBhdGggZD0iTTIyNy4wMDIsMTA4LjI1NmMtMi43NTUtNDEuNzUxLTM3LjYtNzQuODc4LTgwLjAzNi03NC44NzhjLTQyLjQ0NywwLTc3LjI5OCwzMy4xNDEtODAuMDM4LDc0LjkwNyAgIEMyOC45NzgsMTEzLjA1OSwwLDE0NS4zOSwwLDE4NC4xODRjMCw0Mi4yMzQsMzQuMzYsNzYuNTk1LDc2LjU5NSw3Ni41OTVoMTE2LjQ4M2MzLjMxMywwLDYtMi42ODcsNi02cy0yLjY4Ny02LTYtNkg3Ni41OTUgICBDNDAuOTc3LDI0OC43NzgsMTIsMjE5LjgwMSwxMiwxODQuMTg0YzAtMzQuMjc1LDI2LjgzMy02Mi41NjgsNjEuMDg3LTY0LjQxMWMzLjE4NC0wLjE3MSw1LjY3OC0yLjgwMyw1LjY3OC01Ljk5MSAgIGMwLTAuMTE5LTAuMDAzLTAuMjM2LTAuMDEtMC4zNTVjMC4wOS0zNy41MzYsMzAuNjU0LTY4LjA0OSw2OC4yMTEtNjguMDQ5YzM3LjU2MywwLDY4LjEzMiwzMC41MTgsNjguMjExLDY4LjA2MyAgIGMtMC4wMDUsMC4xMTYtMC4wMDksMC4yMzgtMC4wMDksMC4zMjljMCwzLjE5NiwyLjUwNSw1LjgzMSw1LjY5Niw1Ljk5MmMzNC4zNywxLjc0MSw2MS4yOTIsMzAuMDM4LDYxLjI5Miw2NC40MjEgICBjMCwxOS41MjYtOC42OTgsMzcuODAxLTIzLjg2NCw1MC4xMzhjLTIuNTcxLDIuMDkxLTIuOTU5LDUuODctMC44NjgsOC40NGMyLjA5MSwyLjU3MSw1Ljg3LDIuOTU5LDguNDQsMC44NjggICBjMTcuOTgtMTQuNjI2LDI4LjI5Mi0zNi4yOTMsMjguMjkyLTU5LjQ0N0MyOTQuMTU2LDE0NS4yNjksMjY1LjA4LDExMi45MjYsMjI3LjAwMiwxMDguMjU2eiIgZmlsbD0iIzQxNTE2YiIvPgoJPHBhdGggZD0iTTE0MC45NjYsMTQxLjA3OHY3Ni41MTFjMCwzLjMxMywyLjY4Nyw2LDYsNnM2LTIuNjg3LDYtNnYtNzYuNTExYzAtMy4zMTMtMi42ODctNi02LTZTMTQwLjk2NiwxMzcuNzY1LDE0MC45NjYsMTQxLjA3OHoiIGZpbGw9IiM0MTUxNmIiLz4KCTxwYXRoIGQ9Ik0xODEuMjgzLDE1Mi4yMDRjMS41MzYsMCwzLjA3MS0wLjU4Niw0LjI0My0xLjc1N2MyLjM0My0yLjM0MywyLjM0My02LjE0MiwwLTguNDg1bC0zNC4zMTctMzQuMzE3ICAgYy0yLjM0My0yLjM0My02LjE0My0yLjM0My04LjQ4NSwwbC0zNC4zMTcsMzQuMzE3Yy0yLjM0MywyLjM0My0yLjM0Myw2LjE0MiwwLDguNDg1YzIuMzQzLDIuMzQzLDYuMTQzLDIuMzQzLDguNDg1LDAgICBsMzAuMDc0LTMwLjA3NGwzMC4wNzQsMzAuMDc0QzE3OC4yMTIsMTUxLjYxOCwxNzkuNzQ4LDE1Mi4yMDQsMTgxLjI4MywxNTIuMjA0eiIgZmlsbD0iIzQxNTE2YiIvPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=" />
+                    <h6>Upload File</h6>
+                </div>
+                <div class="upload-details">
+                    <ul>
+                        <li id="step1">
+                            <i class="fa fa-upload"></i>
+                            <p>File Upload<small>Excel (.xlsx)</small></p>
+                        </li>
+                        <li id="step2">
+                            <i class="fa fa-cog"></i>
+                            <p>File Processing <small id="text-processing">Applying changes</small></p>
+                        </li>
+                        <li id="step3"><i class="fa fa-download"></i>
+                            <p>File Download<small>Generating download</small></p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="shadow">
+
+            </div>
+            <div class="footer">
+                <h3>Create by Truc Pham</h3>
+              </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(window).bind("beforeunload", function () {
+            return confirm("Do you really want to close?");
+        });
+    });
+</script>
+<script>
+    const { Observable, range } = rxjs;
+    const { map, flatMap, catchError, concat, toArray, mergeMap, concatAll, concatMap } = rxjs.operators;
+    var numberImport = 0
+    var textProcessing = $('#text-processing')
+    function remove_unicode(str) {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'| |\"|\&|\#|\[|\]|~|$|_/g, " ");
+
+        str = str.replace(/-+-/g, " "); //thay thế 2- thành 1- 
+        str = str.replace(/^\-+|\-+$/g, "");
+
+        return str;
+    }
+    var getDataApi = function (data) {
+        return Observable.create(function (observer) {
+            $.ajax({
+                url: "http://localhost:3002/api/search",
+                type: "post",
+                dataType: "json",
+                data: {
+                    q: data.cmnd,
+                    type: "auto"
+                },
+                success: function (result) {
+                    observer.next({
+                        excel: data,
+                        response: result
+                    })
+                    observer.complete()
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    observer.error(errorThrown)
+
+                }
+            });
+        })
+    }
+
+    var excelToJSON = function (file) {
+        console.log("start read")
+        return Observable.create(function (observer) {
+            console.log("reading...")
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var data = e.target.result;
+                var workbook = XLSX.read(data, {
+                    type: 'binary'
+                });
+                workbook.SheetNames.forEach(function (sheetName) {
+                    var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                    console.log("completed")
+                    observer.next(XL_row_object);
+                })
+            };
+            reader.onerror = function (ex) {
+                console.log("error")
+                console.log(ex);
+                observer.console.error(ex);
+            };
+            reader.readAsBinaryString(file);
+        });
+    };
+
+    var observableData = function (file) {
+        return excelToJSON(file).pipe(
+            flatMap(json => {
+                numberImport = json.length
+                return json.map(v => {
+                    return getDataApi(v)
+                })
+            }),
+            concatAll()
+        )
+    }
+
+    var getData = function (file) {
+        return Observable.create(function (observer) {
+            observableData(file).subscribe(response => {
+                let v = response.excel
+                let data = response.response
+                if (data.code != 1) {
+                    observer.next({
+                        isError: true,
+                        data: {
+                            valid: false,
+                            name: v.name,
+                            cmnd: v.cmnd,
+                            mst: "",
+                            note: "",
+                            responseName: ""
+                        }
+                    })
+                }
+                else {
+                    observer.next({
+                        isError: false,
+                        data: {
+                            valid: remove_unicode(v.name).trim().toLowerCase() != data.data.name.trim().toLowerCase(),
+                            name: v.name,
+                            cmnd: v.cmnd,
+                            mst: data.data.mst,
+                            note: data.data.success != 1 ? "404" : "",
+                            responseName: data.data.name
+                        }
+                    })
+                }
+            })
+        })
+    }
+    var step1 = function () {
+        $(".upload-file").addClass('animate-flicker');
+        $(".upload-file h6").text('Processing File');
+        $("#step1 p").addClass('ready');
+        $("#step1 i").addClass('ready');
+        $("#step1 i.fa-upload").removeClass('fa-upload').addClass('fa-check');
+    }
+    var step2 = function () {
+        textProcessing.text(0 + "/" + numberImport)
+        $("#step2 p").addClass('ready');
+    }
+    var completed = function () {
+        $(".upload-details p").addClass('ready');
+        $(".upload-details i").addClass('ready');
+        $(".upload-file").removeClass('animate-flicker');
+        $(".upload-file h6").text('Upload complete');
+        $(".fa-upload").removeClass('fa-upload').addClass('fa-check');
+        $(".fa-cog").removeClass('fa-cog').addClass('fa-check');
+        $(".fa-download").removeClass('fa-download').addClass('fa-check');
+    }
+    function filePicked(oEvent) {
+        var file = oEvent.target.files[0];
+        step1()
+        var excel = []
+        getData(file).subscribe(response => {
+            var data = response.data
+            if (!response.isError) {
+                console.log(data)
+                excel.push({
+                    "TEN": data.name,
+                    "CMND_CCCD": data.cmnd,
+                    "MST_TRA_DUOC": data.mst,
+                    "TEN_TRA_DUOC": data.responseName,
+                    "KET_QUA": data.valid ? "KHAC" : "OK",
+                    "GHI_CHU": data.note
+                })
+                textProcessing.text(excel.length + "/" + numberImport)
+            }
+            else {
+                excel.push({
+                    "TEN": data.name,
+                    "CMND_CCCD": data.cmnd,
+                    "MST_TRA_DUOC": "",
+                    "TEN_TRA_DUOC": "",
+                    "KET_QUA": "",
+                    "GHI_CHU": "403"
+                })
+            }
+            if (numberImport == excel.length) {
+                textProcessing.text(excel.length + "/" + numberImport)
+                var myTestXML = new myExcelXML(excel);
+                completed()
+                myTestXML.downLoad();
+
+            }
+
+        })
+    }
+    $(function () {
+        var oFileIn = document.getElementById('file');
+        if (oFileIn.addEventListener) {
+            oFileIn.addEventListener('change', filePicked, false);
+        }
+    });
+</script>
+
+<script>
+    let myExcelXML = (function () {
+        let Workbook, WorkbookStart = '<?xml version="1.0"?><ss:Workbook  xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">';
+        const WorkbookEnd = '</ss:Workbook>';
+        let fs, SheetName = 'SHEET 1',
+            styleID = 1, columnWidth = 80,
+            fileName = "KETQUA", uri, link;
+
+        class myExcelXML {
+            constructor(o) {
+                let respArray = o;
+                let finalDataArray = [];
+
+                for (let i = 0; i < respArray.length; i++) {
+                    finalDataArray.push(flatten(respArray[i]));
+                }
+
+                let s = JSON.stringify(finalDataArray);
+                fs = s.replace(/&/gi, '&amp;');
+            }
+
+            downLoad() {
+                const Worksheet = myXMLWorkSheet(SheetName, fs);
+
+                WorkbookStart += myXMLStyles(styleID);
+
+                Workbook = WorkbookStart + Worksheet + WorkbookEnd;
+
+                uri = 'data:text/xls;charset=utf-8,' + encodeURIComponent(Workbook);
+                link = document.createElement("a");
+                link.href = uri;
+                link.style = "visibility:hidden";
+                link.download = fileName + ".xls";
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            get fileName() {
+                return fileName;
+            }
+
+            set fileName(n) {
+                fileName = n;
+            }
+
+            get SheetName() {
+                return SheetName;
+            }
+
+            set SheetName(n) {
+                SheetName = n;
+            }
+
+            get styleID() {
+                return styleID;
+            }
+
+            set styleID(n) {
+                styleID = n;
+            }
+        }
+        const myXMLStyles = function (id) {
+            let Styles = '<ss:Styles><ss:Style ss:ID="' + id + '"><ss:Font ss:Bold="1"/></ss:Style></ss:Styles>';
+
+            return Styles;
+        }
+
+        const myXMLWorkSheet = function (name, o) {
+            const Table = myXMLTable(o);
+            let WorksheetStart = '<ss:Worksheet ss:Name="' + name + '">';
+            const WorksheetEnd = '</ss:Worksheet>';
+
+            return WorksheetStart + Table + WorksheetEnd;
+        }
+
+        const myXMLTable = function (o) {
+            let TableStart = '<ss:Table>';
+            const TableEnd = '</ss:Table>';
+
+            const tableData = JSON.parse(o);
+
+            if (tableData.length > 0) {
+                const columnHeader = Object.keys(tableData[0]);
+                let rowData;
+                for (let i = 0; i < columnHeader.length; i++) {
+                    TableStart += myXMLColumn(columnWidth);
+
+                }
+                for (let j = 0; j < tableData.length; j++) {
+                    rowData += myXMLRow(tableData[j], columnHeader);
+                }
+                TableStart += myXMLHead(1, columnHeader);
+                TableStart += rowData;
+            }
+
+            return TableStart + TableEnd;
+        }
+
+        const myXMLColumn = function (w) {
+            return '<ss:Column ss:AutoFitWidth="0" ss:Width="' + w + '"/>';
+        }
+
+
+        const myXMLHead = function (id, h) {
+            let HeadStart = '<ss:Row ss:StyleID="' + id + '">';
+            const HeadEnd = '</ss:Row>';
+
+            for (let i = 0; i < h.length; i++) {
+                const Cell = myXMLCell(h[i].toUpperCase());
+                HeadStart += Cell;
+            }
+
+            return HeadStart + HeadEnd;
+        }
+
+        const myXMLRow = function (r, h) {
+            let RowStart = '<ss:Row>';
+            const RowEnd = '</ss:Row>';
+            for (let i = 0; i < h.length; i++) {
+                const Cell = myXMLCell(r[h[i]]);
+                RowStart += Cell;
+            }
+
+            return RowStart + RowEnd;
+        }
+
+        const myXMLCell = function (n) {
+            let CellStart = '<ss:Cell>';
+            const CellEnd = '</ss:Cell>';
+
+            const Data = myXMLData(n);
+            CellStart += Data;
+
+            return CellStart + CellEnd;
+        }
+
+        const myXMLData = function (d) {
+            let DataStart = '<ss:Data ss:Type="String">';
+            const DataEnd = '</ss:Data>';
+
+            return DataStart + d + DataEnd;
+        }
+
+        const flatten = function (obj) {
+            var obj1 = JSON.parse(JSON.stringify(obj));
+            const obj2 = JSON.parse(JSON.stringify(obj));
+            if (typeof obj === 'object') {
+                for (var k1 in obj2) {
+                    if (obj2.hasOwnProperty(k1)) {
+                        if (typeof obj2[k1] === 'object' && obj2[k1] !== null) {
+                            delete obj1[k1]
+                            for (var k2 in obj2[k1]) {
+                                if (obj2[k1].hasOwnProperty(k2)) {
+                                    obj1[k1 + '-' + k2] = obj2[k1][k2];
+                                }
+                            }
+                        }
+                    }
+                }
+                var hasObject = false;
+                for (var key in obj1) {
+                    if (obj1.hasOwnProperty(key)) {
+                        if (typeof obj1[key] === 'object' && obj1[key] !== null) {
+                            hasObject = true;
+                        }
+                    }
+                }
+                if (hasObject) {
+                    return flatten(obj1);
+                } else {
+                    return obj1;
+                }
+            } else {
+                return obj1;
+            }
+        }
+
+        return myExcelXML;
+    })();
+</script>
+
+</html>
