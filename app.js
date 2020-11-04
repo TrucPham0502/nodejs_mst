@@ -94,7 +94,7 @@ function capitalizeFirstLetter(string) {
 // Start the server
 app.use('/', router);
 app.use(express.static(__dirname + '/css'));
-const server = app.listen(port, (error) => {
+const server = app.listen(port,ip, (error) => {
     if (error) return console.log(`Error: ${error}`);
  
     console.log(`Server listening on port ${server.address().port}`);
