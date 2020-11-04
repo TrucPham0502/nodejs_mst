@@ -40,7 +40,7 @@ router.post('/api/search', (req, res) => {
         token: "NOn9sval2X"
     };
     var options = {
-        url: 'https://masothue.vn/Ajax/Search',
+        url: 'http://masothue.vn/Ajax/Search',
         headers: {
             'host': ip.toString(),
             'proxy': "139.99.122.37",
