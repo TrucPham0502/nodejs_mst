@@ -1,7 +1,7 @@
 // Require packages and set the port
 const routes = require('./routes/routes');
 const express = require('express');
-const port = 80;
+const port = 8000;
 const bodyParser = require('body-parser');
 const request = require('request-promise');
 const randomUseragent = require('random-useragent');
@@ -17,8 +17,8 @@ app.use(bodyParser.urlencoded({
     extended: true,
 }));
 
-var useAgent = ""
-var ip = ""
+var useAgent = randomUseragent.getRandom()
+var ip = randomip('192.168.1.0', 24)
 router.get('/',function(req,res){
     useAgent = randomUseragent.getRandom()
     ip = randomip('192.168.1.0', 24)
