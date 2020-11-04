@@ -25,6 +25,13 @@ router.get('/',function(req,res){
     res.sendFile(path.join(__dirname+'/index.html'));
 });
 
+router.post("/api/test", (req, res) => {
+    res.send({
+        code : 0,
+        message: 'Test ok',
+        data: {}
+    });
+})
 
 router.post('/api/search', (req, res) => {
     var params = {  
