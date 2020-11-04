@@ -11,6 +11,8 @@ const fs = require('fs');
 const app = express();
 const router = express.Router();
 const path = require('path');
+const DomParser = require('dom-parser');
+const parser = new DomParser();
 // Use Node.js body parsing middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -32,6 +34,82 @@ router.post("/api/test", (req, res) => {
         data: {}
     });
 })
+
+router.post('/api/searchv2', (req, res) => {
+    var options = {
+        url: 'https://masothue.vn/Search?q='+req.body.q+'&type='+req.body.type,
+        headers: {
+            'host': ip.toString(),
+            'proxy': ip.toString(),
+            'user-agent': useAgent,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        method: "GET",
+    };
+    console.log(options)
+    request(options)
+    .then( (body) =>  { 
+        res.send({
+            code : 1,
+            message: 'Success',
+            data: progressDataHtml(body)
+        });
+    }).catch(error => { 
+        console.log(error.message)
+        res.send({
+            code : 0,
+            message: 'Error',
+            data: {}
+        });
+    })
+})
+
+function progressDataHtml(body){
+    var res = {
+        success: 0,
+        mst: "",
+        name: ""
+    }
+    var doc = parser.parseFromString(body, "text/html");
+    var el = doc.getElementsByTagName('title')[0];
+    var data = el.textContent
+    console.log(data)
+    var dataArray = data.split("-");
+    if(dataArray.length > 0)
+    {
+        var mst = dataArray[0].trim()
+        if(validation.isNumber(mst))
+        {
+            res.success = 1
+            res.mst = mst
+            if(dataArray.length > 1)
+            {
+                res.name = dataArray[1].trim()
+            }
+        }
+        
+    }
+    return res
+}
+
+var validation = {
+    isEmailAddress:function(str) {
+        var pattern =/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        return pattern.test(str);  // returns a boolean
+    },
+    isNotEmpty:function (str) {
+        var pattern =/\S+/;
+        return pattern.test(str);  // returns a boolean
+    },
+    isNumber:function(str) {
+        var pattern = /^\d+$/;
+        return pattern.test(str);  // returns a boolean
+    },
+    isSame:function(str1,str2){
+        return str1 === str2;
+    }
+};   
+
 
 router.post('/api/search', (req, res) => {
     var params = {  

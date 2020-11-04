@@ -325,7 +325,7 @@
     var getDataApi = function (data) {
         return Observable.create(function (observer) {
             $.ajax({
-                url: "http://ec2-184-72-103-160.compute-1.amazonaws.com:8000/api/search",
+                url: "http://ec2-184-72-103-160.compute-1.amazonaws.com:8000/api/searchv2",
                 type: "post",
                 dataType: "json",
                 data: {
@@ -406,7 +406,7 @@
                     observer.next({
                         isError: false,
                         data: {
-                            valid: remove_unicode(v.name).trim().toLowerCase() != data.data.name.trim().toLowerCase(),
+                            valid: remove_unicode(v.name).trim().toLowerCase() != remove_unicode(data.data.name).trim().toLowerCase(),
                             name: v.name,
                             cmnd: v.cmnd,
                             mst: data.data.mst,
