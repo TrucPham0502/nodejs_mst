@@ -303,9 +303,11 @@
 </script>
 <script>
     const { Observable, range } = rxjs;
-    const { map, flatMap, catchError, concat, toArray, mergeMap, concatAll, concatMap } = rxjs.operators;
+    const { map, flatMap, catchError, concat, toArray, mergeMap, concatAll, concatMap , delay} = rxjs.operators;
     var numberImport = 0
+    var excel = []
     var textProcessing = $('#text-processing')
+    var timeDelay = 10000
     function remove_unicode(str) {
         str = str.toLowerCase();
         str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
@@ -377,7 +379,7 @@
             flatMap(json => {
                 numberImport = json.length
                 return json.map(v => {
-                    return getDataApi(v)
+                    return getDataApi(v).pipe(delay(timeDelay))
                 })
             }),
             concatAll()
@@ -441,7 +443,6 @@
     function filePicked(oEvent) {
         var file = oEvent.target.files[0];
         step1()
-        var excel = []
         getData(file).subscribe(response => {
             var data = response.data
             if (!response.isError) {
@@ -454,7 +455,6 @@
                     "KET_QUA": data.valid ? "KHAC" : "OK",
                     "GHI_CHU": data.note
                 })
-                textProcessing.text(excel.length + "/" + numberImport)
             }
             else {
                 excel.push({
@@ -466,12 +466,12 @@
                     "GHI_CHU": "403"
                 })
             }
+            textProcessing.text(excel.length + "/" + numberImport)
             if (numberImport == excel.length) {
                 textProcessing.text(excel.length + "/" + numberImport)
                 var myTestXML = new myExcelXML(excel);
                 completed()
                 myTestXML.downLoad();
-
             }
 
         })
@@ -494,6 +494,7 @@
 
         class myExcelXML {
             constructor(o) {
+                fileName = "KETQUA_"+o.length
                 let respArray = o;
                 let finalDataArray = [];
 

@@ -68,7 +68,8 @@ function progressDataHtml(body){
     var res = {
         success: 0,
         mst: "",
-        name: ""
+        name: "",
+        status: ""
     }
     var doc = parser.parseFromString(body, "text/html");
     var el = doc.getElementsByTagName('title')[0];
@@ -86,6 +87,7 @@ function progressDataHtml(body){
             {
                 res.name = dataArray[1].trim()
             }
+            let tableData = doc.getElementsByClassName("table-taxinfo")
         }
         
     }
