@@ -256,10 +256,263 @@
             transform: rotate(360deg);
         }
     }
+
+
+
+ul, li{
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+    text-decoration: none;
+    list-style: none;
+}
+
+    .outer {
+    position: relative;
+    top: 10%;
+    z-index: 1;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+/*-----*/
+
+.signboard {
+    width: 100px;
+    height: 100px;
+    margin: auto;
+    color: #fff;
+    border-radius: 10px;
+}
+/*-----*/
+
+.front {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    background: #ff726b;
+    text-align: center;
+}
+.right {
+    position: absolute;
+    right: : 0;
+    z-index: 2;
+    -webkit-transform: rotate(-10deg) translate(7px, 8px);
+    -moz-transform: rotate(-10deg) translate(7px, 8px);
+    -ms-transform: rotate(-10deg) translate(7px, 8px);
+    -o-transform: rotate(-10deg) translate(7px, 8px);
+    transform: rotate(-10deg) translate(7px, 8px);
+    background: #EFC94C;
+}
+.left {
+    position: absolute;
+    left: 0;
+    z-index: 1;
+    -webkit-transform: rotate(5deg) translate(-4px, 4px);
+    -moz-transform: rotate(5deg) translate(-4px, 4px);
+    -ms-transform: rotate(5deg) translate(-4px, 4px);
+    -o-transform: rotate(5deg) translate(-4px, 4px);
+    transform: rotate(5deg) translate(-4px, 4px);
+    background: #3498DB;
+}
+/*-----*/
+
+.outer:hover .inner {
+    -webkit-transform: rotate(0) translate(0);
+    -moz-transform: rotate(0) translate(0);
+    -ms-transform: rotate(0) translate(0);
+    -o-transform: rotate(0) translate(0);
+    transform: rotate(0) translate(0);
+}
+/*-----*/
+
+.outer:active .inner {
+    -webkit-transform: rotate(0) translate(0) scale(0.9);
+    -moz-transform: rotate(0) translate(0) scale(0.9);
+    -ms-transform: rotate(0) translate(0) scale(0.9);
+    -o-transform: rotate(0) translate(0) scale(0.9);
+    transform: rotate(0) translate(0) scale(0.9);
+}
+.outer:active .front .date {
+    -webkit-transform: scale(2);
+}
+.outer:active .front .day,
+.outer:active .front .month {
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    -o-transform: scale(0);
+    transform: scale(0);
+}
+.outer:active .right {
+    -webkit-transform: rotate(-5deg) translateX(80px) scale(0.9);
+    -moz-transform: rotate(-5deg) translateX(80px) scale(0.9);
+    -ms-transform: rotate(-5deg) translateX(80px) scale(0.9);
+    -o-transform: rotate(-5deg) translateX(80px) scale(0.9);
+    transform: rotate(-5deg) translateX(80px) scale(0.9);
+}
+.outer:active .left {
+    -webkit-transform: rotate(5deg) translateX(-80px) scale(0.9);
+    -moz-transform: rotate(5deg) translateX(-80px) scale(0.9);
+    -ms-transform: rotate(5deg) translateX(-80px) scale(0.9);
+    -o-transform: rotate(5deg) translateX(-80px) scale(0.9);
+    transform: rotate(5deg) translateX(-80px) scale(0.9);
+}
+/*-----*/
+
+.outer:active .calendarMain {
+    -webkit-transform: scale(1.8);
+    opacity: 0;
+    visibility: hidden;
+}
+.outer:active .clock {
+    -webkit-transform: scale(1.4);
+    opacity: 1;
+    visibility: visible;
+}
+.outer:active .calendarNormal {
+    bottom: -30px;
+    opacity: 1;
+    visibility: visible;
+}
+.outer:active .year {
+    top: -30px;
+    opacity: 1;
+    visibility: visible;
+    letter-spacing: 3px;
+}
+/*-----*/
+
+.calendarMain {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    opacity: 1;
+}
+.month,
+.day {
+    font-size: 10px;
+    line-height: 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+.date {
+    font-size: 40px;
+    line-height: 40px;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+/*-----*/
+
+.clock {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    font-size: 40px;
+    line-height: 100px;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+}
+/*-----*/
+
+.year {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    font-size: 14px;
+    line-height: 30px;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    color: #ff726b;
+}
+.calendarNormal {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    font-size: 14px;
+    line-height: 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+}
+.date2 {
+    color: #ff726b;
+}
+.day2 {
+    color: #3498DB;
+}
+.month2 {
+    color: #EFC94C;
+}
+
 </style>
 
-<body>
-    <div class="container">
+<body id="gradient">
+    <div class="container"  >
+        <div class="signboard outer">
+            <div class="signboard front inner anim04c">
+                <li class="year anim04c">
+                    <span></span>
+                </li>
+                <ul class="calendarMain anim04c">
+                    <li class="month anim04c">
+                        <span></span>
+                    </li>
+                    <li class="date anim04c">
+                        <span></span>
+                    </li>
+                    <li class="day anim04c">
+                        <span></span>
+                    </li>
+                </ul>
+                <li class="clock minute anim04c">
+                    <span></span>
+                </li>
+                <li class="calendarNormal date2 anim04c">
+                    <span></span>
+                </li>
+            </div>
+            <div class="signboard left inner anim04c">
+                <li class="clock hour anim04c">
+                    <span></span>
+                </li>
+                <li class="calendarNormal day2 anim04c">
+                    <span></span>
+                </li>
+            </div>
+            <div class="signboard right inner anim04c">
+                <li class="clock second anim04c">
+                    <span></span>
+                </li>
+                <li class="calendarNormal month2 anim04c">
+                    <span></span>
+                </li>
+            </div>
+        </div>
         <div class="center-box">
             <div class="upload-box noselect">
                 <div class="upload-file">
@@ -670,6 +923,108 @@
 
         return myExcelXML;
     })();
+</script>
+
+<script>
+    var colors = new Array(
+  [62,35,255],
+  [60,255,60],
+  [255,35,98],
+  [45,175,230],
+  [255,0,255],
+  [255,128,0]);
+
+var step = 0;
+//color table indices for: 
+// current color left
+// next color left
+// current color right
+// next color right
+var colorIndices = [0,1,2,3];
+
+//transition speed
+var gradientSpeed = 0.002;
+
+function updateGradient()
+{
+  
+  if ( $===undefined ) return;
+  
+var c0_0 = colors[colorIndices[0]];
+var c0_1 = colors[colorIndices[1]];
+var c1_0 = colors[colorIndices[2]];
+var c1_1 = colors[colorIndices[3]];
+
+var istep = 1 - step;
+var r1 = Math.round(istep * c0_0[0] + step * c0_1[0]);
+var g1 = Math.round(istep * c0_0[1] + step * c0_1[1]);
+var b1 = Math.round(istep * c0_0[2] + step * c0_1[2]);
+var color1 = "rgb("+r1+","+g1+","+b1+")";
+
+var r2 = Math.round(istep * c1_0[0] + step * c1_1[0]);
+var g2 = Math.round(istep * c1_0[1] + step * c1_1[1]);
+var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
+var color2 = "rgb("+r2+","+g2+","+b2+")";
+
+ $('#gradient').css({
+   background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"}).css({
+    background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
+  
+  step += gradientSpeed;
+  if ( step >= 1 )
+  {
+    step %= 1;
+    colorIndices[0] = colorIndices[1];
+    colorIndices[2] = colorIndices[3];
+    
+    //pick two new target color indices
+    //do not pick the same as the current one
+    colorIndices[1] = ( colorIndices[1] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+    colorIndices[3] = ( colorIndices[3] + Math.floor( 1 + Math.random() * (colors.length - 1))) % colors.length;
+    
+  }
+}
+
+setInterval(updateGradient,10);
+</script>
+
+<script>
+    $(document).ready(function () {
+
+var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ]; 
+var dayNames= [ "Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday" ];
+
+var newDate = new Date();
+newDate.setDate(newDate.getDate());
+
+setInterval( function() {
+var hours = new Date().getHours();
+$(".hour").html(( hours < 10 ? "0" : "" ) + hours);
+    var seconds = new Date().getSeconds();
+$(".second").html(( seconds < 10 ? "0" : "" ) + seconds);
+    var minutes = new Date().getMinutes();
+$(".minute").html(( minutes < 10 ? "0" : "" ) + minutes);
+    
+    $(".month span,.month2 span").text(monthNames[newDate.getMonth()]);
+    $(".date span,.date2 span").text(newDate.getDate());
+    $(".day span,.day2 span").text(dayNames[newDate.getDay()]);
+    $(".year span").html(newDate.getFullYear());
+}, 1000);
+
+
+
+$(".outer").on({
+    mousedown:function(){
+        $(".dribbble").css("opacity","1");
+    },
+    mouseup:function(){
+        $(".dribbble").css("opacity","0");
+    }
+});
+
+
+
+});
 </script>
 
 </html>
