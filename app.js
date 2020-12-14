@@ -37,7 +37,7 @@ router.post("/api/test", (req, res) => {
 
 router.post('/api/searchv2', (req, res) => {
     var options = {
-        url: 'https://masothue.vn/Search?q='+req.body.q+'&type='+req.body.type,
+        url: 'https://masothue.vn/Search?q='+req.body.q+'&type='+req.body.type+'&force-search=1',
         headers: {
             'host': ip.toString(),
             'proxy': ip.toString(),

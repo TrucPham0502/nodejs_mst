@@ -584,7 +584,7 @@ ul, li{
     var getDataApi = function (data) {
         return Observable.create(function (observer) {
             $.ajax({
-                url: window.location.href+"api/search",
+                url: window.location.href+"api/searchv2",
                 type: "post",
                 dataType: "json",
                 data: {
