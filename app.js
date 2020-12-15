@@ -12,6 +12,8 @@ const app = express();
 const router = express.Router();
 const path = require('path');
 const DomParser = require('dom-parser');
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
 const parser = new DomParser();
 // Use Node.js body parsing middleware
 app.use(bodyParser.json());
@@ -22,7 +24,6 @@ app.use(bodyParser.urlencoded({
 var useAgent = randomUseragent.getRandom()
 var ip = randomip('192.168.1.0', 24)
 router.get('/',function(req,res){
-    useAgent = randomUseragent.getRandom()
     ip = randomip('192.168.1.0', 24)
     res.sendFile(path.join(__dirname+'/index.html'));
 });
@@ -37,10 +38,8 @@ router.post("/api/test", (req, res) => {
 
 router.post('/api/searchv2', (req, res) => {
     var options = {
-        url: 'https://masothue.vn/Search?q='+req.body.q+'&type='+req.body.type+'&force-search=1',
+        url: 'https://masothue.vn/Search?q='+req.body.q+'&type='+req.body.type+'&force-search=1&token=7TCIW1AxKo',
         headers: {
-            'host': ip.toString(),
-            'proxy': ip.toString(),
             'user-agent': useAgent,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
@@ -55,7 +54,9 @@ router.post('/api/searchv2', (req, res) => {
             data: progressDataHtml(body)
         });
     }).catch(error => { 
-        console.log(error.message)
+        console.log("error: "+ error.message)
+        useAgent = randomUseragent.getRandom()
+        console.log("change useAgent to ", useAgent)
         res.send({
             code : 0,
             message: 'Error',
@@ -71,8 +72,8 @@ function progressDataHtml(body){
         name: "",
         status: ""
     }
-    var doc = parser.parseFromString(body, "text/html");
-    var el = doc.getElementsByTagName('title')[0];
+    const dom = new JSDOM(body)
+    var el = dom.window.document.querySelector("title");
     var data = el.textContent
     console.log(data)
     var dataArray = data.split("-");
@@ -87,7 +88,6 @@ function progressDataHtml(body){
             {
                 res.name = dataArray[1].trim()
             }
-            let tableData = doc.getElementsByClassName("table-taxinfo")
         }
         
     }
