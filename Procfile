@@ -1,1 +1,1 @@
-web: node appTPMovie.js
+worker: node appTPMovie.js
