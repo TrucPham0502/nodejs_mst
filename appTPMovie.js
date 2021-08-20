@@ -241,7 +241,7 @@ function getM3u8(url, res) {
 // Start the server
 app.use('/', router);
 app.use(express.static(__dirname + '/css'));
-const server = app.listen(process.env.PORT | 5000, (error) => {
+const server = app.listen(process.env.PORT | 5000, "0.0.0.0", (error) => {
     if (error) return console.log(`Error: ${error}`);
  
     console.log(`Server listening on port ${server.address().port}`);
