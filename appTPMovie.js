@@ -23,10 +23,10 @@ app.use(bodyParser.urlencoded({
 
 var useAgent = randomUseragent.getRandom()
 var ip = randomip('192.168.1.0', 24)
-router.get('/',function(req,res){
-    ip = randomip('192.168.1.0', 24)
-    res.sendFile(path.join(__dirname+'/index.html'));
-});
+// router.get('/',function(req,res){
+//     ip = randomip('192.168.1.0', 24)
+//     res.sendFile(path.join(__dirname+'/index.html'));
+// });
 
 router.post("/api/test", (req, res) => {
     res.send({
@@ -35,7 +35,10 @@ router.post("/api/test", (req, res) => {
         data: {}
     });
 })
+router.get("/",(req, res) => {
+    res.send("Welcome to TPMovie API")
 
+} )
 router.post('/api/list', (req, res) => {
     var urlPage = "https://www.hhkungfu.tv/"
     if (req.body.urlPage != null) {
@@ -238,7 +241,7 @@ function getM3u8(url, res) {
 // Start the server
 app.use('/', router);
 app.use(express.static(__dirname + '/css'));
-const server = app.listen(process.env.PORT | 3000, (error) => {
+const server = app.listen(process.env.PORT | port, (error) => {
     if (error) return console.log(`Error: ${error}`);
  
     console.log(`Server listening on port ${server.address().port}`);
