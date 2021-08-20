@@ -1,1 +1,1 @@
-worker: node appTPMovie.js
+worker: node index.js

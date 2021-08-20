@@ -2,7 +2,7 @@
   "name": "node_mst",
   "version": "1.0.0",
   "description": "tra cuu ma so thue",
-  "main": "appTPMovie.js",
+  "main": "index.js",
   "dependencies": {
     "body-parser": "^1.19.0",
     "dom-parser": "^0.1.6",
