@@ -1,2 +1,1 @@
-web: 
-    node appTPMovie.js
+web: node appTPMovie.js
