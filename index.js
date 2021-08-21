@@ -1,7 +1,7 @@
 // Require packages and set the port
 const routes = require('./routes/routes');
 const express = require('express');
-const port = 8000;
+
 const bodyParser = require('body-parser');
 const request = require('request-promise');
 const randomUseragent = require('random-useragent');
@@ -240,8 +240,10 @@ function getM3u8(url, res) {
  
 // Start the server
 app.use('/', router);
+const port = process.env.PORT || 8000;
+const host = process.env.HOST || '::';
 app.use(express.static(__dirname + '/css'));
-const server = app.listen(process.env.PORT | 5000, process.env.HOST || '::', (error) => {
+const server = app.listen(port, host, (error) => {
     if (error) return console.log(`Error: ${error}`);
  
     console.log(`Server listening on port ${server.address().port}`);
