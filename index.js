@@ -86,6 +86,11 @@ router.post('/api/getId', (req, res) => {
     .then( (body) =>  { 
         const dom = new JSDOM(body)
         var url = dom.window.document.querySelector("div.btn-group").querySelector("button").getAttribute("onclick").replace("location.href='","").replace("'","");
+        var contentFilm = dom.window.document.querySelectorAll('p.noidung');
+        var arrContent = []
+        contentFilm.forEach(ele => {
+            arrContent.push(ele.textContent)
+        })
         var options = {
             url: url,
             headers: {
@@ -128,7 +133,10 @@ router.post('/api/getId', (req, res) => {
             res.send({
                 isSuccess : true,
                 message: "Success",
-                data: result
+                data: {
+                    episodes: result,
+                    contents: arrContent
+                }
             })
         }).catch(error => { 
             console.log("error: "+ error.message)
