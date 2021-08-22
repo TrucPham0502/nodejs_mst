@@ -39,7 +39,18 @@ router.get("/",(req, res) => {
     res.send("Welcome to TPMovie API")
 
 } )
-router.post('/api/list', (req, res) => {
+////////// HELPER ////////////////////////////
+
+function createResponse(data, message, isSucces) {
+    return {
+        isSuccess : isSucces,
+        message: message,
+        data: data
+    }
+}
+
+////////////// API ///////////////////////////
+router.post('/api/films', (req, res) => {
     var urlPage = "https://www.hhkungfu.tv/"
     if (req.body.urlPage != null) {
         urlPage = decodeURI(req.body.urlPage)
@@ -57,22 +68,14 @@ router.post('/api/list', (req, res) => {
     console.log(options)
     request(options)
     .then( (body) =>  { 
-        res.send({
-            isSuccess : true,
-            message: "Success",
-            data: progressDataList(body)
-        });
+        res.send(createResponse(progressDataList(body),"Success", true))
     }).catch(error => { 
         console.log("error: "+ error.message)
-        res.send({
-            isSuccess : false,
-            message: "error",
-            data: {}
-        });
+        res.send(createResponse({}, "error", false));
     })
 })
 
-router.post('/api/getId', (req, res) => {
+router.post('/api/filmdetail', (req, res) => {
     var options = {
         url: req.body.url,
         headers: {
@@ -103,67 +106,62 @@ router.post('/api/getId', (req, res) => {
         request(options).then( (body2) =>  { 
             var result = []
             const dom2 = new JSDOM(body2)
-            var _index = -1
+            var _new = false
             var button = dom2.window.document.querySelectorAll('button.button_movie');
+            
             button.forEach((ele, index) => {
                 if(ele.getAttribute('onclick').includes('tap_moi()')) {
-                    _index = index
-                    return false
+                    _new = true
                 }
-                return true
-            })
-            console.log(_index);
-            console.log(button.length);
-            for(let i = _index; i < button.length; i++) {
-                var newEpisode = parseInt(button[i].getAttribute("id"));
-                const re = new RegExp("link1_"+newEpisode+".*(?=\\?)");
-                var myArray = body2.match(re);
-                if(myArray.length > 0){
-                    const myArray2 = myArray[0].match(/\b(\w+)$/);
-                    console.log(myArray[0])
-                    if(myArray2.length > 0) {
-                        var id = myArray2[0]
-                        result.push({
-                            episode : newEpisode,
-                            id : id
-                        })
+                var newEpisode = parseInt(ele.getAttribute("id"));
+                var newEpisodeString = newEpisode < 10 ? "0"+newEpisode : newEpisode
+                const reLink = new RegExp("link1_"+newEpisodeString+".*");
+                var myArrayLink = body2.match(reLink);
+                if(myArrayLink.length > 0) {
+                    var link = myArrayLink[0].replace("\"", "").replace(/['"]+/g, '')
+                    console.log(link)
+                    if(link.includes('fileone')) {
+                        const episodeUrlArray = link.match(/\b(\w+)$/);
+                        if(episodeUrlArray.length > 0) {
+                            var id = episodeUrlArray[0]
+                            result.push({
+                                episode : newEpisode,
+                                id: id,
+                                link : "https://fileone.tv/v/"+id,
+                                isNew : _new,
+                                type: "fileone"
+                            })
+                        }
+                    }
+                    else if(link.includes('dailymotion')){
+                        var episodeUrl = link.split("?")[0]
+                        const episodeUrlArray = episodeUrl.match(/\b(\w+)$/);
+                        if(episodeUrlArray.length > 0) {
+                            var id = episodeUrlArray[0]
+                            result.push({
+                                episode : newEpisode,
+                                id : id,
+                                isNew : _new,
+                                type: "dailymotion"
+                            })
+                        }
                     }
                 }
-            }
-            res.send({
-                isSuccess : true,
-                message: "Success",
-                data: {
-                    episodes: result,
-                    contents: arrContent
-                }
             })
+            res.send(createResponse({
+                episodes: result,
+                contents: arrContent
+            }, "Success", true));
         }).catch(error => { 
             console.log("error: "+ error.message)
-            res.send({
-                isSuccess : false,
-                message: "error",
-                data: {}
-            });
+            res.send(createResponse({}, "error", false));
         })
     }).catch(error => { 
         console.log("error: "+ error.message)
-        res.send({
-            isSuccess : false,
-            message: "error",
-            data: {}
-        });
+        createResponse({}, "error", false);
     })
 })
 
-
-function removeItemOnce(arr, value) {
-    var index = arr.indexOf(value);
-    if (index > -1) {
-      arr.splice(index, 1);
-    }
-    return arr;
-  }
 
 function progressDataList(body) {
     var data = []
@@ -188,7 +186,34 @@ function progressDataList(body) {
     return res
 }
 
-router.get('/api/m3u8', (req, res) => {
+
+router.post("/api/fileone", (req, res) => {
+    var options = {
+        url: req.body.url,
+        headers: {
+            'user-agent': useAgent,
+            'referer': 'https://www.hhkungfu.tv/',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        method: "GET",
+    };
+    console.log(options)
+    request(options)
+    .then( (body) =>  { 
+        const dom = new JSDOM(body)
+        var el = dom.window.document.querySelector("video#my-video").querySelectorAll("source");
+        if(el.length > 0) {
+            res.send(createResponse({
+                url : "https:"+el[0].getAttribute('src')
+            },"Success", true));
+        }
+    }).catch(error => { 
+        console.log("error: "+ error.message)
+        res.send("");
+    })
+})
+
+router.get('/api/dailymotion', (req, res) => {
     var options = {
         url: 'https://www.dailymotion.com/embed/video/'+req.query.id,
         headers: {
