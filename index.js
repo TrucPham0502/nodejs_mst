@@ -13,6 +13,7 @@ const router = express.Router();
 const path = require('path');
 const DomParser = require('dom-parser');
 const jsdom = require("jsdom");
+const { json } = require('body-parser');
 const { JSDOM } = jsdom;
 const parser = new DomParser();
 // Use Node.js body parsing middleware
@@ -118,33 +119,35 @@ router.post('/api/filmdetail', (req, res) => {
                 const reLink = new RegExp("link1_"+newEpisodeString+".*");
                 var myArrayLink = body2.match(reLink);
                 if(myArrayLink.length > 0) {
-                    var link = myArrayLink[0].replace("\"", "").replace(/['"]+/g, '')
+                    var link = myArrayLink[0];
                     console.log(link)
+                    let id = getLastPath(link);
                     if(link.includes('fileone')) {
-                        const episodeUrlArray = link.match(/\b(\w+)$/);
-                        if(episodeUrlArray.length > 0) {
-                            var id = episodeUrlArray[0]
-                            result.push({
-                                episode : newEpisode,
-                                id: id,
-                                link : "https://fileone.tv/v/"+id,
-                                isNew : _new,
-                                type: "fileone"
-                            })
-                        }
+                        result.push({
+                            episode : newEpisode,
+                            id: id,
+                            link : "https://fileone.tv/v/"+id,
+                            isNew : _new,
+                            type: "fileone"
+                        })
                     }
                     else if(link.includes('dailymotion')){
-                        var episodeUrl = link.split("?")[0]
-                        const episodeUrlArray = episodeUrl.match(/\b(\w+)$/);
-                        if(episodeUrlArray.length > 0) {
-                            var id = episodeUrlArray[0]
-                            result.push({
-                                episode : newEpisode,
-                                id : id,
-                                isNew : _new,
-                                type: "dailymotion"
-                            })
-                        }
+                        result.push({
+                            episode : newEpisode,
+                            id : id,
+                            link : "https://www.dailymotion.com/embed/video/"+id,
+                            isNew : _new,
+                            type: "dailymotion"
+                        })
+                    }
+                    else if(link.includes('fembed')){
+                        result.push({
+                            episode : newEpisode,
+                            id : id,
+                            link : "https://www.fembed.com/v/"+id,
+                            isNew : _new,
+                            type: "dailymotion"
+                        })
                     }
                 }
             })
@@ -185,6 +188,162 @@ function progressDataList(body) {
     }
     return res
 }
+
+
+
+router.post("/api/hhtq/list", (req, res) => {
+    const host = 'https://hhtq.net'
+    var options = {
+        url: host,
+        headers: {
+            'user-agent': useAgent,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        method: "GET",
+    };
+    console.log(options)
+    request(options)
+    .then( (body) =>  { 
+        var result = []
+        const dom = new JSDOM(body)
+        var panel = dom.window.document.querySelectorAll("div.myui-panel.myui-panel-bg");
+        panel.forEach(ele => {
+            let title = ele.querySelector("div.myui-panel_hd").querySelector('h3.title').textContent;
+            var vodlist = ele.querySelector('ul.myui-vodlist').querySelectorAll('li');
+            var vodArray = []
+            vodlist.forEach(vod => {
+                var linkElement = vod.querySelector('a');
+                var link = linkElement.getAttribute('href');
+                var poster = linkElement.getAttribute('data-original');
+                var picTag = linkElement.querySelector('span.pic-tag.pic-tag-top').textContent;
+                var name = vod.querySelector('div.myui-vodlist__detail').querySelector('a').textContent
+                vodArray.push({
+                    url : host+link,
+                    poster: host+poster,
+                    name: name,
+                    picTag : picTag
+                })
+            })
+            result.push({
+                title : title,
+                data : vodArray
+            })
+        })
+        res.send(createResponse(result,"Success", true));
+
+    }).catch(error => { 
+        console.log("error: "+ error.message)
+        res.send("");
+    })
+})
+router.post("/api/hhtq/detail", (req, res) => {
+    const host = 'https://hhtq.net'
+    var options = {
+        url: req.body.url,
+        headers: {
+            'user-agent': useAgent,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        method: "GET",
+    };
+    console.log(options)
+    request(options)
+    .then( (body) =>  { 
+        const dom = new JSDOM(body)
+        var content = dom.window.document.querySelector("span.sketch.content").textContent;
+        var episode = dom.window.document.querySelector('div#playlist1').querySelector('ul.myui-content__list').querySelectorAll('li');
+        var episodeArray = []
+        episode.forEach(ele => {
+            var aTag = ele.querySelector('a');
+            var link = aTag.getAttribute('href');
+            var newEpisode = aTag.textContent;
+            episodeArray.push({
+                episode : newEpisode,
+                id: host+link+newEpisode,
+                link : host + link,
+                isNew : false,
+                type: "hhtq"
+            });
+        })
+        
+        res.send(createResponse({
+            episodes: episodeArray,
+            contents: [content]
+        },"Success", true));
+
+    }).catch(error => { 
+        console.log("error: "+ error.message)
+        res.send("");
+    })
+})
+
+
+router.post("/api/hhtq/getepisode", (req, res) => {
+    const host = 'https://hhtq.net'
+    var options = {
+        url: req.body.url,
+        headers: {
+            'user-agent': useAgent,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        method: "GET",
+    };
+    console.log(options)
+    request(options)
+    .then( (body) =>  { 
+        var playerArray = body.match(/player_aaaa={.*}/);
+        if(playerArray.length > 0){
+            var jsonConfig = playerArray[0].match(/{.*}/)[0];
+            var jsonObject = JSON.parse(jsonConfig);
+            var result = {}
+            if(jsonObject.url.includes('dailymotion')) {
+                result = {
+                    url: jsonObject.url,
+                    id: getLastPath(jsonObject.url),
+                    type: "dailymotion"
+                }
+            }
+            res.send(createResponse(result,"Success", true));
+        }
+    }).catch(error => { 
+        console.log("error: "+ error.message)
+        res.send("");
+    })
+})
+
+
+
+///////////////// ---- player
+function getLastPath(url) {
+    const _url = url.replace(/['"]+/g, '')
+    var array = _url.match(/[^\/]+(\w(?=\?))|(\b(\w+)$)/);
+    if(array.length > 0)
+    {
+        return array[0]
+    }
+    return ""
+}
+
+router.post("/api/fembed", (req, res) => {
+    var host = "https://www.fembed.com/api/source/"
+    var options = {
+        url: host+req.query.id,
+        headers: {
+            'user-agent': useAgent,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        method: "POST",
+    };
+    console.log(options)
+    request(options)
+    .then( (body) =>  { 
+        var object = JSON.parse(body);
+        res.send(createResponse(object.data, "Success", true))
+    }).catch(error => { 
+        console.log("error: "+ error.message)
+        res.send("");
+    })
+})
 
 
 router.post("/api/fileone", (req, res) => {
