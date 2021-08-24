@@ -381,6 +381,7 @@ router.post("/api/fembed", (req, res) => {
         url: host+req.query.id,
         headers: {
             'user-agent': useAgent,
+            'referer': 'https://dutrag.com/',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
         method: "POST",
