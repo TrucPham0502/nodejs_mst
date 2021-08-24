@@ -51,32 +51,21 @@ function createResponse(data, message, isSucces) {
 }
 
 ////////////// API ///////////////////////////
-router.post('/api/films', (req, res) => {
+router.post('/api/hhkungfu/list', (req, res) => {
     var urlPage = "https://www.hhkungfu.tv/"
     if (req.body.urlPage != null) {
         urlPage = decodeURI(req.body.urlPage)
        
     }
-    console.log(urlPage)
-    var options = {
-        url: urlPage,
-        headers: {
-            'user-agent': useAgent,
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        method: "GET",
-    };
-    console.log(options)
-    request(options)
-    .then( (body) =>  { 
-        res.send(createResponse(progressDataList(body),"Success", true))
-    }).catch(error => { 
-        console.log("error: "+ error.message)
+    gethhkungfulist(urlPage, data => {
+        res.send(createResponse(data,"Success", true))
+    }, err => {
+        console.log("error: "+ err.message)
         res.send(createResponse({}, "error", false));
     })
 })
 
-router.post('/api/filmdetail', (req, res) => {
+router.post('/api/hhkungfu/detail', (req, res) => {
     var options = {
         url: req.body.url,
         headers: {
@@ -165,6 +154,25 @@ router.post('/api/filmdetail', (req, res) => {
     })
 })
 
+function gethhkungfulist(url, complete, error){
+    console.log(url)
+    var options = {
+        url: url,
+        headers: {
+            'user-agent': useAgent,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        method: "GET",
+    };
+    console.log(options)
+    request(options)
+    .then( (body) =>  { 
+        complete(progressDataList(body))
+    }).catch(error => { 
+        error(error)
+    })
+}
+
 
 function progressDataList(body) {
     var data = []
@@ -178,20 +186,74 @@ function progressDataList(body) {
             url : url,
             poster: poster,
             name: name,
+            picTag : ""
         })
     });
     var urlPage = dom.window.document.querySelector("a.blog-pager-older-link").getAttribute('href');
     console.log(data)
     var res = {
+        title: 'Hot',
         urlPage : urlPage,
-        data : data
+        data : data,
+        pageType : 'hhkungfu'
     }
-    return res
+    return [res]
 }
 
 
 
 router.post("/api/hhtq/list", (req, res) => {
+    gethhtqlist(data => {
+        res.send(createResponse(data,"Success", true));
+    }, err => {
+        console.log("error: "+ err.message)
+        res.send("");
+    })
+   
+})
+router.post("/api/hhtq/detail", (req, res) => {
+    const host = 'https://hhtq.net'
+    var options = {
+        url: req.body.url,
+        headers: {
+            'user-agent': useAgent,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        method: "GET",
+    };
+    console.log(options)
+    request(options)
+    .then( (body) =>  { 
+        const dom = new JSDOM(body)
+        var content = dom.window.document.querySelector("span.sketch.content").textContent;
+        var episode = dom.window.document.querySelector('div#playlist1').querySelector('ul.myui-content__list').querySelectorAll('li');
+        var episodeArray = []
+        episode.forEach(ele => {
+            var aTag = ele.querySelector('a');
+            var link = aTag.getAttribute('href');
+            var newEpisode = aTag.textContent;
+            episodeArray.push({
+                episode : parseInt(newEpisode) ?? 0,
+                id: host+link+newEpisode,
+                link : host + link,
+                isNew : false,
+                type: "hhtq"
+            });
+        })
+        
+        res.send(createResponse({
+            episodes: episodeArray,
+            contents: [content]
+        },"Success", true));
+
+    }).catch(error => { 
+        console.log("error: "+ error.message)
+        res.send("");
+    })
+})
+
+
+function gethhtqlist(complete, error){
     const host = 'https://hhtq.net'
     var options = {
         url: host,
@@ -226,57 +288,17 @@ router.post("/api/hhtq/list", (req, res) => {
             })
             result.push({
                 title : title,
-                data : vodArray
+                urlPage: "",
+                data : vodArray,
+                pageType : 'hhtq'
             })
         })
-        res.send(createResponse(result,"Success", true));
+        complete(result)
 
     }).catch(error => { 
-        console.log("error: "+ error.message)
-        res.send("");
+        error(error)
     })
-})
-router.post("/api/hhtq/detail", (req, res) => {
-    const host = 'https://hhtq.net'
-    var options = {
-        url: req.body.url,
-        headers: {
-            'user-agent': useAgent,
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        method: "GET",
-    };
-    console.log(options)
-    request(options)
-    .then( (body) =>  { 
-        const dom = new JSDOM(body)
-        var content = dom.window.document.querySelector("span.sketch.content").textContent;
-        var episode = dom.window.document.querySelector('div#playlist1').querySelector('ul.myui-content__list').querySelectorAll('li');
-        var episodeArray = []
-        episode.forEach(ele => {
-            var aTag = ele.querySelector('a');
-            var link = aTag.getAttribute('href');
-            var newEpisode = aTag.textContent;
-            episodeArray.push({
-                episode : newEpisode,
-                id: host+link+newEpisode,
-                link : host + link,
-                isNew : false,
-                type: "hhtq"
-            });
-        })
-        
-        res.send(createResponse({
-            episodes: episodeArray,
-            contents: [content]
-        },"Success", true));
-
-    }).catch(error => { 
-        console.log("error: "+ error.message)
-        res.send("");
-    })
-})
-
+}
 
 router.post("/api/hhtq/getepisode", (req, res) => {
     const host = 'https://hhtq.net'
@@ -303,6 +325,20 @@ router.post("/api/hhtq/getepisode", (req, res) => {
                     type: "dailymotion"
                 }
             }
+            else  if(jsonObject.url.includes('fembed')) {
+                result = {
+                    url: jsonObject.url,
+                    id: getLastPath(jsonObject.url),
+                    type: "fembed"
+                }
+            }
+            else {
+                result = {
+                    url: jsonObject.url,
+                    id: "",
+                    type: "normal"
+                }
+            }
             res.send(createResponse(result,"Success", true));
         }
     }).catch(error => { 
@@ -311,6 +347,21 @@ router.post("/api/hhtq/getepisode", (req, res) => {
     })
 })
 
+
+router.post("/api/common/list", (req, res) => {
+    gethhkungfulist("http://hhkungfu.tv/",hhkungfu => {
+        gethhtqlist(hhtq => {
+            var result = hhkungfu.concat(hhtq)
+            res.send(createResponse(result,"Success", true))
+        }, error => {
+            console.log("error: "+ error.message)
+        res.send("");
+        })
+    }, error => {
+        console.log("error: "+ error.message)
+        res.send("");
+    })
+})
 
 
 ///////////////// ---- player
