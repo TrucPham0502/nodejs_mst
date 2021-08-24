@@ -186,7 +186,7 @@ function progressDataList(body) {
             url : url,
             poster: poster,
             name: name,
-            picTag : ""
+            picTag : "VIETSUB"
         })
     });
     var urlPage = dom.window.document.querySelector("a.blog-pager-older-link").getAttribute('href');
@@ -349,18 +349,27 @@ router.post("/api/hhtq/getepisode", (req, res) => {
 
 
 router.post("/api/common/list", (req, res) => {
-    gethhkungfulist("http://hhkungfu.tv/",hhkungfu => {
-        gethhtqlist(hhtq => {
+    // gethhtqlist(hhtq => {
+    //     res.send(createResponse(hhtq,"Success", true))
+    // }, error => {
+    //     console.log("error: "+ error.message)
+    // res.send("");
+    // })
+    gethhtqlist(hhtq => {
+        gethhkungfulist("http://hhkungfu.tv/",hhkungfu => {
             var result = hhkungfu.concat(hhtq)
             res.send(createResponse(result,"Success", true))
         }, error => {
             console.log("error: "+ error.message)
-        res.send("");
+            res.send(createResponse(hhtq,"Success", true))
         })
+        
     }, error => {
         console.log("error: "+ error.message)
         res.send("");
     })
+
+    
 })
 
 
